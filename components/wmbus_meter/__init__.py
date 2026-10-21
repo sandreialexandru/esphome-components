@@ -4,7 +4,6 @@ from esphome.const import (
     CONF_ID,
     CONF_TYPE,
     CONF_KEY,
-    CONF_PAYLOAD,
     CONF_TRIGGER_ID,
     CONF_MODE,
 )
@@ -89,22 +88,3 @@ async def to_code(config):
             [(MeterRef, "meter")],
             conf,
         )
-
-
-TELEGRAM_MQTT_PUBLISH_ACTION_SCHEMA = cv.All(
-    MQTT_PUBLISH_ACTION_SCHEMA.extend(
-        {
-            cv.Optional(CONF_PAYLOAD): cv.invalid(
-                "If you want to specify payload, use generic 'mqtt.publish' action"
-            )
-        }
-    ),
-    lambda c: {**c, CONF_PAYLOAD: cv.Lambda("return meter.as_json();")},
-)
-
-
-automation.register_action(
-    "wmbus_meter.send_telegram_with_mqtt",
-    MQTTPublishAction,
-    TELEGRAM_MQTT_PUBLISH_ACTION_SCHEMA,
-)(mqtt_publish_action_to_code)
